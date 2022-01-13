@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
+import androidx.core.content.withStyledAttributes
 import java.lang.Math.*
 
 private enum class FanSpeed(val label: Int) {
@@ -39,8 +40,19 @@ class DialView @JvmOverloads constructor(
         typeface = Typeface.create( "", Typeface.BOLD)
     }
 
+    // Values set in custom attributes in xml. Handle in init
+    private var fanSpeedLowColor = 0
+    private var fanSpeedMediumColor = 0
+    private var fanSeedMaxColor = 0
+
     init {
         isClickable = true
+
+        context.withStyledAttributes(attrs, R.styleable.DialView) {
+            fanSpeedLowColor = getColor(R.styleable.DialView_fanColor1, 0)
+            fanSpeedMediumColor = getColor(R.styleable.DialView_fanColor2, 0)
+            fanSeedMaxColor = getColor(R.styleable.DialView_fanColor3, 0)
+        }
     }
 
     override fun performClick(): Boolean {
@@ -66,12 +78,19 @@ class DialView @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        paint.color = when (fanSpeed) {
+            FanSpeed.OFF -> Color.GRAY
+            FanSpeed.LOW -> fanSpeedLowColor
+            FanSpeed.MEDIUM -> fanSpeedMediumColor
+            FanSpeed.HIGH -> fanSeedMaxColor
+        } as Int
 
-        paint.color = if (fanSpeed == FanSpeed.OFF) Color.GRAY else Color.GREEN
         canvas.drawCircle((width / 2).toFloat(), (height / 2).toFloat(), radius, paint)
 
         drawMarker(canvas)
         drawTextLabels(canvas)
+
+
     }
 
     private fun drawMarker(canvas: Canvas) {
