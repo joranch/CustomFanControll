@@ -1,3 +1,3 @@
 # CustomFanControll
 
-Project for testing out custom views
+Project uses custom views with custom attributes and bindings
